@@ -14,7 +14,7 @@ app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://chatbot-hno9.onrender.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

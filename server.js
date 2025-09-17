@@ -7,6 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_PROJECT_ID = "proj_2QWJVIixBaWoxxU04rZqdV48"; // pega aquí tu Project ID
 
 app.post("/api/chat", async (req, res) => {
   try {
@@ -17,9 +18,10 @@ app.post("/api/chat", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${OPENAI_API_KEY}`,
+        "OpenAI-Project": OPENAI_PROJECT_ID
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // puedes probar con "gpt-3.5-turbo" si falla
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "Eres un asistente experto en mascotas que da consejos de emergencias." },
           { role: "user", content: userMessage }
@@ -29,13 +31,11 @@ app.post("/api/chat", async (req, res) => {
 
     const data = await response.json();
 
-    // ✅ Validar si la respuesta trae error
     if (data.error) {
       console.error("OpenAI error:", data.error);
       return res.status(500).json({ reply: "⚠️ Error desde OpenAI: " + data.error.message });
     }
 
-    // ✅ Validar si hay choices
     if (!data.choices || !data.choices[0]) {
       console.error("Respuesta inesperada de OpenAI:", data);
       return res.status(500).json({ reply: "⚠️ No se recibió respuesta válida de OpenAI." });
@@ -51,4 +51,5 @@ app.post("/api/chat", async (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`✅ Servidor corriendo en puerto ${PORT}`));
+
 

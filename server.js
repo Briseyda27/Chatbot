@@ -21,7 +21,8 @@ app.post("/api/chat", async (req, res) => {
         "OpenAI-Project": OPENAI_PROJECT_ID
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-3.5-turbo",
+
         messages: [
           { role: "system", content: "Eres un asistente experto en mascotas que da consejos de emergencias." },
           { role: "user", content: userMessage }

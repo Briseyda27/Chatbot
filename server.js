@@ -10,11 +10,11 @@ app.use(express.json());
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Ruta del chatbot
-app.post("/chat", async (req, res) => {
+app.post("/api/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
 
-    const response = await fetch("https://chatbot-hno9.onrender.com", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,9 +32,11 @@ app.post("/chat", async (req, res) => {
     const data = await response.json();
     res.json({ reply: data.choices[0].message.content });
   } catch (error) {
-    console.error(error);
+    console.error("Error al conectar con la IA:", error);
     res.status(500).json({ reply: "Hubo un error al conectar con la IA." });
   }
 });
 
-app.listen(10000, () => console.log("✅ Servidor corriendo en Render"));
+// Puerto dinámico para Render
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`✅ Servidor corriendo en puerto ${PORT}`));

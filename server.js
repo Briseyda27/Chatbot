@@ -1,56 +1,46 @@
 import express from "express";
-import fetch from "node-fetch";
 import cors from "cors";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_PROJECT_ID = "proj_2QWJVIixBaWoxxU04rZqdV48"; // pega aquí tu Project ID
+// -------------------------
+// RESPUESTAS SIMULADAS
+// -------------------------
+function getSimulatedReply(message) {
+  const msg = message.toLowerCase();
 
-app.post("/api/chat", async (req, res) => {
-  try {
-    const userMessage = req.body.message;
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
-        "OpenAI-Project": OPENAI_PROJECT_ID
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-
-        messages: [
-          { role: "system", content: "Eres un asistente experto en mascotas que da consejos de emergencias." },
-          { role: "user", content: userMessage }
-        ],
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.error) {
-      console.error("OpenAI error:", data.error);
-      return res.status(500).json({ reply: "⚠️ Error desde OpenAI: " + data.error.message });
-    }
-
-    if (!data.choices || !data.choices[0]) {
-      console.error("Respuesta inesperada de OpenAI:", data);
-      return res.status(500).json({ reply: "⚠️ No se recibió respuesta válida de OpenAI." });
-    }
-
-    res.json({ reply: data.choices[0].message.content });
-
-  } catch (error) {
-    console.error("Error al conectar con la IA:", error);
-    res.status(500).json({ reply: "⚠️ Hubo un error al conectar con la IA." });
+  if (msg.includes("perro")) {
+    return "🐶 Para tu perro, mantén la calma y revisa signos vitales como pulso y respiración.";
+  } 
+  if (msg.includes("gato")) {
+    return "🐱 Para tu gato, observa su pecho y asegúrate de que respire correctamente.";
   }
+  if (msg.includes("conejo")) {
+    return "🐰 Mantén a tu conejo tranquilo, revisa temperatura y signos de estrés.";
+  }
+  if (msg.includes("loro")) {
+    return "🦜 Revisa que el loro tenga jaula limpia y agua fresca, y controla su respiración.";
+  }
+  if (msg.includes("gallina")) {
+    return "🐔 Para gallinas, observa heridas leves y aisla si hay problemas respiratorios.";
+  }
+
+  return "🤖 Lo siento, aún no tengo información sobre eso. Intenta con otro animal o pregunta más específica.";
+}
+
+// -------------------------
+// ENDPOINT DEL CHATBOT
+// -------------------------
+app.post("/api/chat", (req, res) => {
+  const userMessage = req.body.message || "";
+  const reply = getSimulatedReply(userMessage);
+  res.json({ reply });
 });
 
+// -------------------------
+// PUERTO
+// -------------------------
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`✅ Servidor corriendo en puerto ${PORT}`));
-
-
